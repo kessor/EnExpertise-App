@@ -3,8 +3,20 @@ import Observation
 
 @Observable
 class ComplianceViewModel {
-    var annualConsumptionGWh: Double = 0.0
-    var isKMU: Bool = false
+    
+    // Lädt den Wert beim Start aus dem Speicher und speichert ihn bei jeder Änderung
+    var annualConsumptionGWh: Double = UserDefaults.standard.double(forKey: "savedGWh") {
+        didSet {
+            UserDefaults.standard.set(annualConsumptionGWh, forKey: "savedGWh")
+        }
+    }
+    
+    // Gleiches Prinzip für den KMU-Status
+    var isKMU: Bool = UserDefaults.standard.bool(forKey: "savedKMU") {
+        didSet {
+            UserDefaults.standard.set(isKMU, forKey: "savedKMU")
+        }
+    }
     
     var statusMessage: String {
         // Logik basierend auf EnEfG & EDL-G Entscheidungsbaum
