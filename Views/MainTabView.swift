@@ -12,7 +12,7 @@ struct MainTabView: View {
             PEFView()
                 .tabItem { Label("Faktoren", systemImage: "leaf") }
                 
-            Text("Multi-Site Audit (In Arbeit)")
+            MultiSiteView()
                 .tabItem { Label("Standorte", systemImage: "building.2") }
         }
         .accentColor(.green)
