@@ -1,0 +1,22 @@
+name: iOS App Build Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build and Test SwiftUI
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Swift Version
+        run: swift --version
+
+      - name: Build Project (Syntax & Compilation Check)
+        run: swift build -v
