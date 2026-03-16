@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WasteHeatView: View {
     @State private var viewModel = WasteHeatViewModel()
+    @State private var generatedPDFUrl: URL? // Speichert das fertige PDF
     
     var body: some View {
         NavigationStack {
@@ -58,8 +59,46 @@ struct WasteHeatView: View {
                     }
                     .padding(.vertical, 5)
                 }
+                
+                // NEU: PDF Export Sektion
+                Section("Reporting") {
+                    Button(action: {
+                        generatedPDFUrl = ReportGenerator.generateWasteHeatReport(
+                            nennleistung: viewModel.calculation.nennleistungKW,
+                            ersparnis: viewModel.formattedErsparnis,
+                            investition: viewModel.wirtschaftlicheInvestition
+                        )
+                    }) {
+                        HStack {
+                            Spacer()
+                            Label("Bericht generieren", systemImage: "doc.text.fill")
+                                .bold()
+                            Spacer()
+                        }
+                    }
+                    
+                    if let pdfUrl = generatedPDFUrl {
+                        ShareLink(item: pdfUrl) {
+                            HStack {
+                                Spacer()
+                                Label("PDF Teilen / Speichern", systemImage: "square.and.arrow.up")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                Spacer()
+                            }
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.green)
+                            .cornerRadius(8)
+                        }
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
+                    }
+                }
             }
             .navigationTitle("Abwärmerechner")
+            // Setzt das PDF zurück, wenn sich Eingaben ändern
+            .onChange(of: viewModel.calculation.nennleistungKW) { _, _ in generatedPDFUrl = nil }
         }
     }
 }
