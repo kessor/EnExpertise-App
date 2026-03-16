@@ -2,7 +2,9 @@ import SwiftUI
 
 struct PEFView: View {
     @State private var viewModel = PEFViewModel()
-    @State private var inputKWh: Double? = nil
+    
+    // NEU: @AppStorage speichert diese Eingabe automatisch und dauerhaft auf dem Gerät
+    @AppStorage("pefInputKWh") private var inputKWh: Double = 1000.0
     
     var body: some View {
         NavigationStack {
@@ -18,30 +20,42 @@ struct PEFView: View {
                     }
                 }
                 
-                Section(header: Text("Katalog (Anlage 4 GEG)")) {
+                Section(header: Text("Katalog (PEF & CO₂-Faktor)")) {
                     ForEach(viewModel.filteredEntries) { entry in
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(entry.name).font(.headline)
-                                Text(entry.category).font(.caption).foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            VStack(alignment: .trailing) {
-                                Text("PEF: \(entry.factor, specifier: "%.1f")")
-                                    .bold()
-                                
-                                // Wenn der Nutzer oben einen Wert eingibt, berechnen wir sofort die Primärenergie
-                                if let input = inputKWh {
-                                    Text("= \(input * entry.factor, specifier: "%.1f") kWh PE")
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(entry.name).font(.headline)
+                                    Text(entry.category).font(.caption).foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                VStack(alignment: .trailing) {
+                                    Text("PEF: \(entry.factor, specifier: "%.1f")").bold()
+                                    Text("CO₂: \(entry.co2Factor, specifier: "%.3f") kg")
                                         .font(.caption)
-                                        .foregroundColor(.green)
+                                        .foregroundColor(.gray)
                                 }
                             }
+                            
+                            // Live-Berechnung für PE und CO2
+                            HStack {
+                                Text("= \(inputKWh * entry.factor, specifier: "%.0f") kWh PE")
+                                    .font(.subheadline)
+                                    .foregroundColor(.green)
+                                
+                                Spacer()
+                                
+                                Text("= \(inputKWh * entry.co2Factor, specifier: "%.0f") kg CO₂")
+                                    .font(.subheadline)
+                                    .foregroundColor(.red)
+                            }
+                            .padding(.top, 4)
                         }
+                        .padding(.vertical, 4)
                     }
                 }
             }
-            .navigationTitle("PEF Katalog")
+            .navigationTitle("PEF & CO₂ Rechner")
             .searchable(text: $viewModel.searchText, prompt: "Suchen (z. B. Holz, Strom)")
         }
     }
