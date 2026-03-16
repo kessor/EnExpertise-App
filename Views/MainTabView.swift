@@ -9,7 +9,7 @@ struct MainTabView: View {
             WasteHeatView()
                 .tabItem { Label("Abwärme", systemImage: "flame") }
                 
-            Text("PEF Katalog (In Arbeit)")
+            PEFView()
                 .tabItem { Label("Faktoren", systemImage: "leaf") }
                 
             Text("Multi-Site Audit (In Arbeit)")
